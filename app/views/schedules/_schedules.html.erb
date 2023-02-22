@@ -1,0 +1,5 @@
+<% Date::DAYNAMES.each_with_index do |day, j| %>
+  <% if day != "Sunday" %>
+    <%= render "schedule", day: day, j: j %>
+  <% end %>
+<% end %>

@@ -1,0 +1,127 @@
+<div class="container mt-4">
+  <div class="row">
+    <%= render "admin/home/calendar", title: "Today", count: @books_today %>
+    <%= render "admin/home/calendar", title: "This week", count: @books_week %>
+    <%= render "admin/home/calendar", title: "This month", count: @books_month %>
+  </div>
+  <div class="row mt-4">
+    <div class="col-lg-6">
+      <div class="card p-3">
+        <h4 class="card-title text-primary">Calendar</h4>
+        <table class="table bg-white table-bordered table-responsive">
+          <thead>
+            <% Date::DAYNAMES.each_with_index do |day, i| %>
+                <th><%= day %></th>
+            <% end %>
+          </thead>
+          <tbody>
+            <% d = 0 %>
+            <% @datetime.week_split.each_with_index do |week, i| %>
+              <tr>
+                <% week.each_with_index do |day| %>
+                    <td class="<%= day == @datetime.strftime('%-d').to_i ? 'bg-primary text-white' : '' %>">
+                      <a style="text-decoration: none; color: inherit; display: block;" href="<%= path_with :datetime, date_from_day(day) %>"><%= day %></a>
+                    </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card p-3">
+        <div class="mb-2">
+          <h4 class="card-title text-primary">Weekly Overview</h4>
+          <canvas id="myChart" ></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-lg-5">
+      <div class="card p-3">
+        <h4 class="card-title text-primary mb-2">Appointments</h4>
+        <table class="table table-bordered table-responsive">
+          <tbody>
+            <% (8..16).each do |i| %>
+              <% datetime = @datetime.beginning_of_day.advance(:hours => +i) %>
+              <% cancelled = Popup.upcoming_on?(datetime) %>
+              <% upcoming = Book.upcoming_on(datetime) %>
+              <tr>
+                <td>
+                  <small><%= "#{i} - #{i + 1}" %></small>
+                </td>
+                <td>
+                  <ul>
+                    <% upcoming.each do |book| %>
+                      <li id="<%= "appointment-#{datetime}" %>" class="mt-2 <%= cancelled ? 'text-muted' : '' %>">
+                        <p class="m-0"><%= "#{book.name} (#{book.phone})" %></p>
+                      </li>
+                    <% end %>
+                  </ul>
+                </td>
+                <td>
+                  <% if !cancelled && upcoming.size > 0 %>
+                    <button
+                      id="<%= "cancel-#{datetime}" %>"
+                      type="button"
+                      class="btn btn-text-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#popup-<%= text_datetime datetime %>"
+                    >
+                      Cancel
+                    </button>
+                    <%= render "admin/popups/form", datetime: datetime %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: <%= @overview.keys.to_json.html_safe %>,
+        datasets: [{
+            label: '# of Appointments',
+            data: <%= @overview.values %>,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                  // forces step size to be 50 units
+                  stepSize: 1
+                }
+            }
+        },
+        responsive: true
+    }
+});
+</script>

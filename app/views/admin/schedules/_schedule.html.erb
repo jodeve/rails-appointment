@@ -1,0 +1,27 @@
+<tr>
+  <td>
+    <small><%= "#{i} - #{i + 1}" %></small>
+  </td>
+  <% Date::DAYNAMES.each_with_index do |day, j| %>
+    <% if day != "Sunday" %>
+      <% datetime = get_datetime j, i %>
+      <% schedule = Schedule.at day, i %>
+      <td id="<%= "#{text_date(datetime)}-#{i}-td" %>" class="p-0 <%= new_schedule_state schedule, datetime %> align-middle text-center">
+        <% slotname = name(day, i) %>
+        <% pslotname = slotname.parameterize %>
+        <% if !schedule %>
+          <div data-bs-toggle="modal" data-bs-target="#<%= pslotname %>">Unavailable</div>
+          <%= render "admin/schedules/form", pslotname: pslotname, day: day, i: i %>
+        <% else %>
+          <% if Popup.upcoming_on? datetime %>
+            Popup
+          <% else %>
+            <a class="text-decoration-none" style="color: inherit;" id="<%= "#{text_date(datetime)}-#{i}" %>" href="<%= admin_root_path datetime: datetime %>">
+              <%= "#{schedule.slots_left datetime} slots" %>
+            </a>
+          <% end %>
+        <% end %>
+      </td>
+    <% end %>
+  <% end %>
+</tr>

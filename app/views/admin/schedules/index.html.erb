@@ -1,0 +1,24 @@
+<div class="card p-3">
+  <div class="mb-2">
+    <h4 class="card-title text-primary">Schedules</h4>
+    <div class="">
+      <%= render "shared/timebar" %>
+    </div>
+  </div>
+  <table class="table bg-white table-bordered table-responsive">
+    <thead>
+      <th>#</th>
+      <% Date::DAYNAMES.each_with_index do |day, i| %>
+        <% if day != "Sunday" %>
+          <% date = @start_of_week.advance(:days => +i) %>
+          <th><%= "#{readable_date(date)}-#{day}" %></th>
+        <% end %>
+      <% end %>
+    </thead>
+    <tbody>
+      <% (8..16).each do |i| %>
+        <%= render "admin/schedules/schedule", i: i %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

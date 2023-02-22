@@ -1,0 +1,48 @@
+<% date = @start_of_week.advance(:days => +j) %>
+<div class="col-lg-2 p-2">
+  <div class="">
+    <p><%= readable_date date %></p>
+    <h5><%= day %></h5>
+  </div>
+  <% (8..16).each do |i| %>
+    <% datetime = get_datetime j, i %>
+    <% schedule = Schedule.at day, i %>
+    <% if !schedule %>
+      <button class="btn space not-available schedule">
+        Unavailable
+      </button>
+    <% else %>
+      <% if datetime.future? %>
+        <% if Popup.upcoming_on? datetime %>
+          <button class="btn space schedule">
+            Cancelled
+          </button>
+        <% else %>
+          <% if schedule.is_full_on? datetime %>
+            <button
+              id="<%= text_datetime(datetime) %>"
+              class="btn space booked schedule"
+            >
+              Booked
+            </button>
+          <% else %>
+            <a
+              id="<%= text_datetime(datetime) %>"
+              style="text-decoration: none; color: inherit"
+              href="<%= new_book_path datetime: datetime  %>"
+              class="space available schedule"
+            >
+              <%= "#{schedule.slots_left datetime} slots left" %>
+            </a>
+          <% end %>
+        <% end %>
+      <% else %>
+        <button
+          class="btn space schedule"
+        >
+          Past
+        </button>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

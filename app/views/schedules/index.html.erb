@@ -1,0 +1,28 @@
+<div class="row">
+  <div id="desktop" style="padding-top: 20rem !important;" class="col-2 col-sm-1 d-none d-sm-block">
+    <% (8..16).each do |i| %>
+      <div class="space d-flex ps-2 align-items-center">
+        <p><%= "#{i}-#{i+1}" %></p>
+      </div>
+    <% end %>
+  </div>
+  <div style="padding-top: 20.4rem !important;" class="d-block d-sm-none col-2 p-0 bg-white">
+    <% (8..16).each do |i| %>
+      <div class="space d-flex ps-2 align-items-center">
+        <small style="font-size: .7rem;"><%= fa_icon "clock-o", class: "me-1" %><%= "#{i}-#{i+1}" %></small>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-10 d-none d-sm-block">
+    <%= render "shared/nav" %>
+    <div class="row">
+      <%= render "schedules" %>
+    </div>
+  </div>
+  <div class="col-10 d-block d-sm-none mt-3">
+    <%= render "shared/nav" %>
+    <div class="owl-carousel">
+      <%= render "schedules" %>
+    </div>
+  </div>
+</div>
